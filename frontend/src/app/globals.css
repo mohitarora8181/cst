@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────── Design tokens ───────────────────────── */
+:root {
+  --bg: 247 242 232;          /* cream paper */
+  --surface: 255 253 248;
+  --surface-2: 238 231 216;
+  --ink: 22 19 30;            /* near-black ink used for borders & shadows */
+  --fg: 22 19 30;
+  --muted: 104 98 118;
+  --line: 22 19 30;
+  --shadow: 22 19 30;
+
+  --lime: 198 255 61;
+  --pink: 255 79 163;
+  --violet: 139 92 246;
+  --tangerine: 255 122 26;
+  --sky: 34 211 238;
+  --sun: 255 210 63;
+  --danger: 239 68 68;
+  --success: 34 197 94;
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: 11 10 15;
+  --surface: 21 19 28;
+  --surface-2: 30 27 40;
+  --ink: 11 10 15;
+  --fg: 244 241 234;
+  --muted: 161 156 176;
+  --line: 52 47 66;
+  --shadow: 198 255 61;       /* lime offset shadows in the dark */
+  color-scheme: dark;
+}
+
+@layer base {
+  * { @apply border-line/15; }
+  .dark * { @apply border-line; }
+  html { -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { @apply bg-lime text-ink; }
+  :focus-visible { @apply outline-none ring-2 ring-pink ring-offset-2 ring-offset-bg; }
+
+  /* subtle film-grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark body::before { opacity: .06; }
+}
+
+@layer components {
+  /* Neo-brutal card: thick ink border + offset shadow */
+  .card {
+    @apply rounded-3xl border-2 border-ink bg-surface shadow-brutal transition-all duration-200;
+  }
+  .dark .card { @apply border-line; }
+  .card-hover { @apply hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-lg; }
+
+  .panel { @apply rounded-3xl border border-line/15 bg-surface; }
+  .dark .panel { @apply border-line; }
+
+  .eyebrow { @apply inline-flex items-center gap-2 rounded-full border-2 border-ink bg-sun px-3 py-1 text-xs font-bold uppercase tracking-widest text-ink; }
+  .dark .eyebrow { @apply border-transparent; }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-pink via-violet to-sky bg-clip-text text-transparent;
+  }
+  .text-stroke {
+    -webkit-text-stroke: 2px rgb(var(--fg));
+    color: transparent;
+  }
+
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  .skeleton { @apply relative overflow-hidden rounded-xl bg-surface-2; }
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent;
+  }
+  .dark .skeleton::after { @apply via-white/5; }
+
+  .dotted-bg {
+    background-image: radial-gradient(rgb(var(--fg) / .12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+@media print {
+  body::before { display: none; }
+  .no-print { display: none !important; }
+}
+
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-14deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(5deg); }
+}
